@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/api", (req, res) => {
   res.send("API working 🚀");
-});
+}):
 
 // Serve static files from frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
