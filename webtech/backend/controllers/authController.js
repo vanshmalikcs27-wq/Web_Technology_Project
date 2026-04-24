@@ -5,7 +5,6 @@ const { generateToken } = require('../middleware/auth');
 // Sign up
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-
 exports.signup = async (req, res) => {
   try {
     const { email, password, firstName, lastName } = req.body;
