@@ -34,37 +34,29 @@ exports.signup = async (req, res) => {
       firstName,
       lastName
     });
+    
+    // Generate token
+    const token = generateToken(user._id, email);
 
-    res.json({
-      message: "Signup successful ✅",
-      user
+    return res.status(201).json({
+      success: true,
+      message: 'Account created successfully',
+      token,
+      user: {
+        id: user._id,
+        email,
+        firstName: firstName || '',
+        lastName: lastName || ''
+      }
     });
-
   } catch (err) {
     console.error("Signup error:", err);
     res.status(500).json({ error: err.message });
   }
 };
 
-    // Generate token
-    const token = generateToken(result.id, email);
 
-    res.status(201).json({
-      success: true,
-      message: 'Account created successfully',
-      token,
-      user: {
-        id: result.id,
-        email,
-        firstName: firstName || '',
-        lastName: lastName || ''
-      }
-    });
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({ error: 'Signup failed' });
-  }
-}
+// Login
 
 // Login
 async function login(req, res) {
