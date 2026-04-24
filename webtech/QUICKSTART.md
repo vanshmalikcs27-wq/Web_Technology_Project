@@ -5,6 +5,25 @@
 ### Prerequisites
 - Node.js 14+ installed ([Download](https://nodejs.org/))
 - A terminal/command prompt
+- **NEW: MongoDB Atlas account** ([Sign up free](https://www.mongodb.com/cloud/atlas))
+
+### ⚠️ IMPORTANT: MongoDB Atlas Setup Required!
+
+Your app now uses **MongoDB Atlas** (cloud database) instead of SQLite. Follow these steps:
+
+1. **Create Free MongoDB Atlas Account**: [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+2. **Create a Cluster**: Select Free tier (0.5GB storage)
+3. **Create Database User**: Username & password (save these!)
+4. **Whitelist Your IP**: In Network Access settings
+5. **Get Connection String**: In Connect section
+6. **Create `.env` file**:
+   ```
+   MONGODB_URI=mongodb+srv://username:password@cluster-name.mongodb.net/webbio?retryWrites=true&w=majority
+   PORT=5000
+   JWT_SECRET=your_secret_key
+   ```
+
+👉 **See [MONGODB_SETUP.md](./MONGODB_SETUP.md) for detailed step-by-step instructions**
 
 ### Option 1: Windows Users
 ```bash
@@ -23,19 +42,26 @@ chmod +x setup.sh
 # 1. Navigate to backend folder
 cd backend
 
-# 2. Install dependencies
+# 2. Create .env file with MongoDB credentials
+cp .env.example .env
+# Edit .env and add your MongoDB Atlas connection string
+
+# 3. Install dependencies
 npm install
 
-# 3. Start server
-npm start
+# 4. Start server
+npm run dev    # Development mode with auto-reload
+# or
+npm start      # Production mode
 ```
 
 ## ✅ After Setup
 
-1. **Server Running**: You'll see `✓ Webbio Server running on http://localhost:5000`
-2. **Open Browser**: Go to `http://localhost:5000`
-3. **Create Account**: Click "Sign Up" to create an account
-4. **Start Building**: Create your first portfolio!
+1. **Database Connected**: You'll see `✓ Connected to MongoDB Atlas`
+2. **Server Running**: You'll see `✓ Webbio Server running on http://localhost:5000`
+3. **Open Browser**: Go to `http://localhost:5000`
+4. **Create Account**: Click "Sign Up" to create an account
+5. **Start Building**: Create your first portfolio!
 
 ## 📝 Default Test Account (Optional)
 
@@ -46,7 +72,7 @@ You can create an account with any email/password:
 ## 🔐 Authentication Flow
 
 1. **Sign Up** → Create account with email/password
-2. **Backend** → Password hashed, user stored in database
+2. **Backend** → Password hashed, user stored in MongoDB
 3. **Login** → Receive JWT token
 4. **Dashboard** → Access your portfolios
 5. **Build** → Create and edit portfolios

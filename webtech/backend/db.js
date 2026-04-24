@@ -1,166 +1,149 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
-const DB_PATH = path.join(__dirname, 'webbio.db');
-let db = null;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://username:password@cluster-name.mongodb.net/webbio?retryWrites=true&w=majority';
 
-// Initialize database
-function initializeDatabase() {
-  db = new sqlite3.Database(DB_PATH, (err) => {
-    if (err) {
-      console.error('Error opening database:', err);
-      return;
-    }
-    console.log('✓ Connected to SQLite database');
-    createTables();
-  });
+// User Schema
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+    lowercase: true,
+    trim: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  firstName: {
+    type: String
+  },
+  lastName: {
+    type: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+// Portfolio Schema
+const portfolioSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  title: String,
+  bio: String,
+  role: String,
+  email: String,
+  phone: String,
+  website: String,
+  template: {
+    type: String,
+    default: 'minimal'
+  },
+  data: mongoose.Schema.Types.Mixed,
+  published: {
+    type: Boolean,
+    default: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+// Skills Schema
+const skillSchema = new mongoose.Schema({
+  portfolioId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Portfolio',
+    required: true
+  },
+  skill: String
+});
+
+// Experience Schema
+const experienceSchema = new mongoose.Schema({
+  portfolioId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Portfolio',
+    required: true
+  },
+  title: String,
+  company: String,
+  startDate: String,
+  endDate: String,
+  description: String
+});
+
+// Education Schema
+const educationSchema = new mongoose.Schema({
+  portfolioId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Portfolio',
+    required: true
+  },
+  school: String,
+  degree: String,
+  field: String,
+  startDate: String,
+  endDate: String
+});
+
+// Projects Schema
+const projectSchema = new mongoose.Schema({
+  portfolioId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Portfolio',
+    required: true
+  },
+  title: String,
+  description: String,
+  link: String
+});
+
+// Create Models
+const User = mongoose.model('User', userSchema);
+const Portfolio = mongoose.model('Portfolio', portfolioSchema);
+const Skill = mongoose.model('Skill', skillSchema);
+const Experience = mongoose.model('Experience', experienceSchema);
+const Education = mongoose.model('Education', educationSchema);
+const Project = mongoose.model('Project', projectSchema);
+
+// Initialize Database Connection
+async function initializeDatabase() {
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log('✓ Connected to MongoDB Atlas');
+  } catch (err) {
+    console.error('✗ Error connecting to MongoDB:', err.message);
+    process.exit(1);
+  }
 }
 
-// Create tables
-function createTables() {
-  db.serialize(() => {
-    // Users table
-    db.run(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        firstName TEXT,
-        lastName TEXT,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `, (err) => {
-      if (err) console.error('Error creating users table:', err);
-      else console.log('✓ Users table ready');
-    });
-
-    // Portfolios table
-    db.run(`
-      CREATE TABLE IF NOT EXISTS portfolios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER NOT NULL,
-        title TEXT,
-        bio TEXT,
-        role TEXT,
-        email TEXT,
-        phone TEXT,
-        website TEXT,
-        template TEXT DEFAULT 'minimal',
-        data TEXT,
-        published BOOLEAN DEFAULT 0,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
-      )
-    `, (err) => {
-      if (err) console.error('Error creating portfolios table:', err);
-      else console.log('✓ Portfolios table ready');
-    });
-
-    // Skills table
-    db.run(`
-      CREATE TABLE IF NOT EXISTS skills (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        portfolioId INTEGER NOT NULL,
-        skill TEXT,
-        FOREIGN KEY (portfolioId) REFERENCES portfolios(id) ON DELETE CASCADE
-      )
-    `, (err) => {
-      if (err) console.error('Error creating skills table:', err);
-      else console.log('✓ Skills table ready');
-    });
-
-    // Experience table
-    db.run(`
-      CREATE TABLE IF NOT EXISTS experience (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        portfolioId INTEGER NOT NULL,
-        title TEXT,
-        company TEXT,
-        startDate TEXT,
-        endDate TEXT,
-        description TEXT,
-        FOREIGN KEY (portfolioId) REFERENCES portfolios(id) ON DELETE CASCADE
-      )
-    `, (err) => {
-      if (err) console.error('Error creating experience table:', err);
-      else console.log('✓ Experience table ready');
-    });
-
-    // Education table
-    db.run(`
-      CREATE TABLE IF NOT EXISTS education (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        portfolioId INTEGER NOT NULL,
-        school TEXT,
-        degree TEXT,
-        field TEXT,
-        startDate TEXT,
-        endDate TEXT,
-        FOREIGN KEY (portfolioId) REFERENCES portfolios(id) ON DELETE CASCADE
-      )
-    `, (err) => {
-      if (err) console.error('Error creating education table:', err);
-      else console.log('✓ Education table ready');
-    });
-
-    // Projects table
-    db.run(`
-      CREATE TABLE IF NOT EXISTS projects (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        portfolioId INTEGER NOT NULL,
-        title TEXT,
-        description TEXT,
-        link TEXT,
-        FOREIGN KEY (portfolioId) REFERENCES portfolios(id) ON DELETE CASCADE
-      )
-    `, (err) => {
-      if (err) console.error('Error creating projects table:', err);
-      else console.log('✓ Projects table ready');
-    });
-  });
-}
-
-// Get database connection
-function getDB() {
-  return db;
-}
-
-// Run query helper
-function runQuery(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
-      if (err) reject(err);
-      else resolve({ id: this.lastID, changes: this.changes });
-    });
-  });
-}
-
-// Get one row helper
-function getRow(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
-}
-
-// Get all rows helper
-function getAllRows(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows || []);
-    });
-  });
-}
-
+// Export functions and models
 module.exports = {
   initializeDatabase,
-  getDB,
-  runQuery,
-  getRow,
-  getAllRows
+  User,
+  Portfolio,
+  Skill,
+  Experience,
+  Education,
+  Project,
+  mongoose
 };

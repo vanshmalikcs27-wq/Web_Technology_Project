@@ -1,0 +1,341 @@
+# Webbio - Complete Requirements List
+# Updated: April 2026
+
+## SYSTEM REQUIREMENTS
+
+### Operating System
+- Windows 10+ / macOS 10.14+ / Linux (Ubuntu 18.04+)
+
+### Runtime & Package Manager
+- Node.js >= 16.0.0 (Download: https://nodejs.org/)
+- npm >= 8.0.0 (Comes with Node.js)
+
+### Database
+- MongoDB Atlas Account (Free tier available)
+  - Sign up: https://www.mongodb.com/cloud/atlas
+  - Free tier: 0.5GB storage, shared cluster
+
+### Browser Support (Frontend)
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+
+---
+
+## BACKEND DEPENDENCIES (Node.js)
+
+### Web Framework & Core
+express@^4.18.2                 # Web server framework
+mongoose@^7.0.0                # MongoDB object mapper and ODM
+
+### Authentication & Security
+bcrypt@^5.1.0                  # Password hashing and verification
+jsonwebtoken@^9.0.2            # JWT token generation and validation
+
+### Middleware & Utilities
+cors@^2.8.5                    # Cross-Origin Resource Sharing (CORS)
+body-parser@^1.20.2            # Request body parsing (JSON and URL-encoded)
+dotenv@^16.3.1                 # Environment variables management
+
+### Development Dependencies (Optional but Recommended)
+nodemon@^3.0.0                 # Auto-restart server on file changes (dev only)
+
+---
+
+## INSTALLATION INSTRUCTIONS
+
+### 1. Install Node.js
+- Download: https://nodejs.org/
+- Choose LTS version (v18+ or v20+)
+- Verify installation:
+  ```
+  node --version
+  npm --version
+  ```
+
+### 2. Install Backend Dependencies
+```bash
+cd backend
+npm install
+```
+
+This will automatically install all packages listed in backend/package.json:
+- express
+- mongoose
+- bcrypt
+- jsonwebtoken
+- cors
+- body-parser
+- dotenv
+
+### 3. Install Development Tools (Optional)
+```bash
+npm install --save-dev nodemon
+```
+
+---
+
+## ENVIRONMENT REQUIREMENTS
+
+### MongoDB Atlas
+- Account Setup: https://www.mongodb.com/cloud/atlas
+- Free Tier: "M0" Shared Cluster (0.5GB)
+- Connection Method: Node.js Driver
+- Network Access: Configure IP whitelist
+- Database User: Create username/password
+
+### Environment Variables (.env file)
+Required in `backend/.env`:
+```
+MONGODB_URI=mongodb+srv://username:password@cluster-name.mongodb.net/webbio?retryWrites=true&w=majority
+PORT=5000
+NODE_ENV=development
+JWT_SECRET=your_super_secret_key_here_minimum_32_chars
+FRONTEND_URL=http://localhost:3000
+```
+
+---
+
+## PACKAGE VERSIONS (Pinned)
+
+### Core Framework
+- express: 4.18.2 or higher
+
+### Database
+- mongoose: 7.0.0 or higher (MongoDB driver)
+
+### Security
+- bcrypt: 5.1.0 or higher
+- jsonwebtoken: 9.0.2 or higher
+
+### Middleware
+- cors: 2.8.5 or higher
+- body-parser: 1.20.2 or higher
+- dotenv: 16.3.1 or higher
+
+### Development
+- nodemon: 3.0.0+ (optional, for development)
+
+---
+
+## INSTALLATION COMMANDS
+
+### Quick Install
+```bash
+# Navigate to backend
+cd backend
+
+# Copy environment template
+cp .env.example .env
+
+# Install all dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### Full Setup (Step-by-Step)
+```bash
+# 1. Clone/navigate to project
+cd webtech/backend
+
+# 2. Create .env file
+cp .env.example .env
+
+# 3. Edit .env with your MongoDB credentials
+# (Use your MongoDB Atlas connection string)
+
+# 4. Install dependencies
+npm install
+
+# 5. Install optional dev tools
+npm install --save-dev nodemon
+
+# 6. Start server
+npm run dev        # Development (auto-reload)
+# or
+npm start          # Production
+
+# 7. Verify server is running
+curl http://localhost:5000/api/health
+```
+
+---
+
+## DATABASE REQUIREMENTS
+
+### MongoDB Collections (Auto-Created)
+- users
+- portfolios
+- skills
+- experience
+- education
+- projects
+
+### MongoDB Atlas Cluster
+- Type: Shared (Free M0 tier)
+- Backup: Disabled (free tier)
+- Encryption: Enabled by default
+- Region: Choose nearest to you
+
+---
+
+## COMPATIBILITY MATRIX
+
+| Component | Version | Status |
+|-----------|---------|--------|
+| Node.js | 16.x, 18.x, 20.x | ✅ Tested |
+| npm | 8.x, 9.x, 10.x | ✅ Supported |
+| MongoDB | 5.0+ | ✅ Atlas Ready |
+| Express | 4.18.x | ✅ Current |
+| Mongoose | 7.x | ✅ Current |
+
+---
+
+## PORT REQUIREMENTS
+
+| Service | Port | Default | Configurable |
+|---------|------|---------|--------------|
+| Backend Server | 5000 | Yes | Via PORT in .env |
+| Frontend | 5000* | Yes | Via server config |
+| MongoDB | N/A (Cloud) | N/A | Handled by Atlas |
+
+*Frontend served from same port as backend
+
+---
+
+## DISK SPACE REQUIREMENTS
+
+| Component | Space | Notes |
+|-----------|-------|-------|
+| Node.js | ~200 MB | Full installation |
+| npm packages | ~300 MB | node_modules/ |
+| MongoDB Atlas | 0.5 GB | Free tier limit |
+| Project files | ~10 MB | Source code |
+| **Total** | **~1 GB** | Development setup |
+
+---
+
+## NETWORK REQUIREMENTS
+
+### Outbound Connections
+- MongoDB Atlas: port 27017 (secure)
+- npm registry: HTTPS (package downloads)
+
+### Inbound Connections
+- Local development: localhost:5000
+- Network access: Add IP to MongoDB Atlas Network Access
+
+---
+
+## RECOMMENDED TOOLS (Optional)
+
+### Development
+- Visual Studio Code (Code editor)
+- Postman (API testing)
+- MongoDB Compass (Database GUI)
+
+### Deployment
+- Git (Version control)
+- Heroku CLI / Railway CLI (Deployment)
+- PM2 (Process manager for production)
+
+---
+
+## VERIFICATION CHECKLIST
+
+- [ ] Node.js v16+ installed (`node --version`)
+- [ ] npm v8+ installed (`npm --version`)
+- [ ] MongoDB Atlas account created
+- [ ] Cluster created and running
+- [ ] Database user credentials saved
+- [ ] IP address whitelisted
+- [ ] Connection string copied
+- [ ] `.env` file created with MONGODB_URI
+- [ ] `npm install` completed without errors
+- [ ] Server starts: `npm run dev` (Connected to MongoDB)
+- [ ] Server responds: `curl http://localhost:5000/api/health`
+
+---
+
+## TROUBLESHOOTING
+
+### Node.js Not Found
+```
+Command: npm install
+Error: 'node' is not recognized
+Solution: Install Node.js from https://nodejs.org/
+```
+
+### Dependencies Installation Fails
+```
+Error: npm ERR! code ERESOLVE
+Solution: 
+  npm install --legacy-peer-deps
+```
+
+### MongoDB Connection Failed
+```
+Error: MongoServerError: authentication failed
+Solution:
+  - Verify MONGODB_URI in .env
+  - Check username/password
+  - Ensure IP is whitelisted
+```
+
+### Port 5000 Already in Use
+```
+Error: listen EADDRINUSE
+Solution: 
+  - Change PORT in .env (e.g., 5001)
+  - Or: npx kill-port 5000
+```
+
+---
+
+## PRODUCTION REQUIREMENTS
+
+### Before Deploying
+- [ ] Strong JWT_SECRET (generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+- [ ] NODE_ENV set to "production"
+- [ ] MongoDB Atlas IP whitelist updated to server IP
+- [ ] SSL/TLS enabled for all connections
+- [ ] Error logging configured
+- [ ] Rate limiting added
+- [ ] CORS configured for production domain
+
+### Hosting Platforms (with Node.js support)
+- Heroku (Easy deployment)
+- Railway (Modern alternative)
+- Render (Free tier available)
+- DigitalOcean (VPS)
+- AWS/Azure/GCP (Advanced)
+
+---
+
+## ADDITIONAL RESOURCES
+
+- Node.js Documentation: https://nodejs.org/docs/
+- npm Documentation: https://docs.npmjs.com/
+- Express.js Guide: https://expressjs.com/
+- Mongoose Documentation: https://mongoosejs.com/
+- MongoDB Atlas Documentation: https://docs.mongodb.com/atlas/
+- JWT.io: https://jwt.io/
+
+---
+
+## SUPPORT
+
+For issues or questions:
+1. Check [REQUIREMENTS.md](REQUIREMENTS.md)
+2. Review [MONGODB_SETUP.md](MONGODB_SETUP.md)
+3. Check [DEPENDENCIES.md](DEPENDENCIES.md)
+4. See [QUICKSTART.md](QUICKSTART.md)
+
+---
+
+**Last Updated:** April 24, 2026
+**Project:** Webbio Portfolio Builder
+**Version:** 2.0 (MongoDB Atlas Migration)
+**Status:** Production Ready

@@ -1,0 +1,22 @@
+# Webbio Backend - Node.js Package Requirements
+# This is auto-managed by npm
+# Install with: npm install
+
+# Core Framework
+express@^4.18.2
+
+# Database
+mongoose@^7.0.0
+
+# Security
+bcrypt@^5.1.0
+jsonwebtoken@^9.0.2
+
+# Middleware & Utils
+cors@^2.8.5
+body-parser@^1.20.2
+dotenv@^16.3.1
+
+# Development (Optional)
+# nodemon (for development auto-reload)
+# Installation: npm install --save-dev nodemon
