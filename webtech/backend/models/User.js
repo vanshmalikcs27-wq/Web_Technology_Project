@@ -7,4 +7,5 @@ const userSchema = new mongoose.Schema({
   lastName: String
 });
 
-module.exports = mongoose.model("User", userSchema);
+// 🔥 FIX
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);
