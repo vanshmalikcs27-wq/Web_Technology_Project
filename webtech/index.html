@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StarGAte</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; background-color: #0d0d0d; color: #ffffff; }
+    a { text-decoration: none; color: inherit; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 60px; border-bottom: 1px solid #222; }
+    nav .logo { font-size: 20px; font-weight: 700; }
+    nav ul { list-style: none; display: flex; gap: 30px; color: #888; }
+    nav button { background: #3b6ef8; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 14px; cursor: pointer; }
+    .hero { text-align: center; padding: 100px 60px; border-bottom: 1px solid #222; }
+    .hero p.badge { color: #3b6ef8; font-size: 13px; margin-bottom: 20px; }
+    .hero h1 { font-size: 60px; font-weight: 700; line-height: 1.1; margin-bottom: 20px; }
+    .hero h1 span { color: #3b6ef8; }
+    .hero p.sub { color: #888; font-size: 15px; margin-bottom: 40px; }
+    .hero-btn { background: #3b6ef8; color: white; border: none; padding: 14px 36px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .hero-btn:hover { background: #5580ff; }
+    .steps { display: flex; text-align: center; border-bottom: 1px solid #222; }
+    .step { flex: 1; padding: 60px 40px; border-right: 1px solid #222; }
+    .step:last-child { border-right: none; }
+    .step .icon { font-size: 30px; margin-bottom: 16px; }
+    .step h3 { font-size: 18px; margin-bottom: 10px; }
+    .step p { color: #888; font-size: 14px; line-height: 1.7; }
+    .features { display: flex; align-items: center; gap: 60px; padding: 80px 60px; border-bottom: 1px solid #222; }
+    .features-text { flex: 1; }
+    .features-text h2 { font-size: 36px; font-weight: 700; margin-bottom: 30px; }
+    .feature { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #222; }
+    .feature:last-child { border-bottom: none; margin-bottom: 0; }
+    .feature h4 { font-size: 16px; margin-bottom: 6px; }
+    .feature p { color: #888; font-size: 14px; }
+    .features-image { flex: 1; border: 1px solid #333; border-radius: 12px; overflow: hidden; background: #111; height: 320px; display: flex; align-items: center; justify-content: center; color: #333; font-size: 14px; }
+    footer { text-align: center; padding: 24px; border-top: 1px solid #222; color: #444; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">Webbio</div>
+    <ul>
+      <li><a href="#">Features</a></li>
+      <li><a href="#">Themes</a></li>
+      <li><a href="#">Pricing</a></li>
+    </ul>
+    <button>Sign In</button>
+  </nav>
+  <section class="hero">
+    <p class="badge">⭐ Join 50,000+ Professionals</p>
+    <h1>Create Your Professional<br>Portfolio in <span>3 Clicks.</span></h1>
+    <p class="sub">Transform your experience into a stunning, hosted site instantly.<br>Just import, choose, and launch.</p>
+    <a href="builder.html" class="hero-btn">Start Building</a>
+  </section>
+  <div class="steps">
+    <div class="step"><div class="icon">📥</div><h3>1. Import Data</h3><p>Upload your resume or paste your LinkedIn URL. Our AI extracts your experience instantly.</p></div>
+    <div class="step"><div class="icon">🎨</div><h3>2. Choose Template</h3><p>Select from designer-made templates. Customize colors, fonts, and layouts to match your brand.</p></div>
+    <div class="step"><div class="icon">🚀</div><h3>3. Launch Site</h3><p>Hit publish and get a professional URL. Your portfolio is mobile-ready and fully SEO optimized.</p></div>
+  </div>
+  <section class="features">
+    <div class="features-text">
+      <h2>Everything you need<br>to get hired.</h2>
+      <div class="feature"><h4>👁 Live Preview</h4><p>See every change in real-time. No guessing how your site will look to recruiters.</p></div>
+      <div class="feature"><h4>🌐 Custom Domains</h4><p>Connect your own .com domain or use our premium subdomains.</p></div>
+      <div class="feature"><h4>🔍 SEO Optimized</h4><p>Meta tags and schema markup ensure search engines find your work.</p></div>
+    </div>
+    <div class="features-image">Portfolio Preview</div>
+  </section>
+  <footer><p>Suraj Kumar - CS 23411206 - 3CSE2.</p></footer>
+</body>
+</html>

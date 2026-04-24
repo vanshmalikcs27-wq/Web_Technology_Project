@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Builder - Webbio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    .builder-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .builder-header {
+      position: sticky;
+      top: 0;
+      background: rgba(13, 13, 13, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .builder-header .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .builder-header .actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .builder-header button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13px;
+    }
+
+    .builder-header button:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .builder-header .btn-save {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    .builder-header .btn-save:hover {
+      background: #5580ff;
+    }
+
+    .builder-content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .builder-form {
+      overflow-y: auto;
+      padding: 40px;
+      border-right: 1px solid var(--border);
+    }
+
+    .builder-preview {
+      overflow-y: auto;
+      padding: 40px;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-section {
+      margin-bottom: 32px;
+    }
+
+    .form-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--blue);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-container {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .preview-container h2 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .preview-container p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .preview-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .preview-skill {
+      background: var(--blue-dim);
+      border: 1px solid rgba(59, 110, 248, 0.3);
+      color: var(--blue);
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 1024px) {
+      .builder-content {
+        grid-template-columns: 1fr;
+      }
+
+      .builder-form {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-message {
+      color: var(--muted);
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="builder-container">
+    <div class="builder-header">
+      <div class="logo">Webbio Portfolio Builder</div>
+      <div class="actions">
+        <button id="previewBtn">Preview</button>
+        <button class="btn-save" id="saveBtn">Save Portfolio</button>
+        <button id="backBtn">Back</button>
+      </div>
+    </div>
+
+    <div class="builder-content">
+      <div class="builder-form">
+        <div class="message-container" id="messageContainer"></div>
+
+        <form id="portfolioForm">
+          <!-- Basic Info -->
+          <div class="form-section">
+            <div class="form-section-title">📝 Basic Information</div>
+            <div class="form-group">
+              <label>Portfolio Title</label>
+              <input type="text" id="title" placeholder="My Portfolio" required>
+            </div>
+            <div class="form-group">
+              <label>Your Name</label>
+              <input type="text" id="name" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+              <label>Professional Role</label>
+              <input type="text" id="role" placeholder="Full Stack Developer" required>
+            </div>
+            <div class="form-group">
+              <label>Bio</label>
+              <textarea id="bio" placeholder="Tell us about yourself..." rows="4"></textarea>
+            </div>
+          </div>
+
+          <!-- Contact -->
+          <div class="form-section">
+            <div class="form-section-title">📧 Contact Information</div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="email" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" id="phone" placeholder="+1 (555) 000-0000">
+            </div>
+            <div class="form-group">
+              <label>Website</label>
+              <input type="url" id="website" placeholder="https://yoursite.com">
+            </div>
+          </div>
+
+          <!-- Skills -->
+          <div class="form-section">
+            <div class="form-section-title">💡 Skills</div>
+            <div class="form-group">
+              <label>Add Skills (comma separated)</label>
+              <textarea id="skillsInput" placeholder="JavaScript, React, Node.js, Python..." rows="3"></textarea>
+              <p style="font-size: 12px; color: var(--muted2); margin-top: 8px;">Separate skills with commas</p>
+            </div>
+          </div>
+
+          <!-- Template -->
+          <div class="form-section">
+            <div class="form-section-title">🎨 Template</div>
+            <div class="form-group">
+              <label>Choose Template</label>
+              <select id="template" required>
+                <option value="minimal">Minimal Dark</option>
+                <option value="bold">Bold</option>
+                <option value="modern">Modern</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="builder-preview">
+        <div class="preview-container">
+          <div style="font-size: 48px; margin-bottom: 16px;">👤</div>
+          <h2 id="previewName">John Doe</h2>
+          <p id="previewRole">Full Stack Developer</p>
+          <p id="previewBio" style="font-size: 13px; line-height: 1.6; color: var(--muted);">Add your bio here...</p>
+          <div class="preview-skills" id="previewSkills"></div>
+          <div style="margin-top: 20px; font-size: 12px; color: var(--muted2);">
+            <div id="previewEmail"></div>
+            <div id="previewPhone"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/ui.js"></script>
+  <script>
+    requireAuth();
+
+    const form = document.getElementById('portfolioForm');
+    const messageContainer = document.getElementById('messageContainer');
+    const saveBtn = document.getElementById('saveBtn');
+    const backBtn = document.getElementById('backBtn');
+    const previewBtn = document.getElementById('previewBtn');
+
+    // Get query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action') || 'create';
+    const portfolioId = urlParams.get('id');
+
+    // Update preview
+    function updatePreview() {
+      document.getElementById('previewName').textContent = document.getElementById('name').value || 'Your Name';
+      document.getElementById('previewRole').textContent = document.getElementById('role').value || 'Your Role';
+      document.getElementById('previewBio').textContent = document.getElementById('bio').value || 'Add your bio here...';
+      document.getElementById('previewEmail').textContent = document.getElementById('email').value ? `📧 ${document.getElementById('email').value}` : '';
+      document.getElementById('previewPhone').textContent = document.getElementById('phone').value ? `📱 ${document.getElementById('phone').value}` : '';
+
+      const skillsText = document.getElementById('skillsInput').value;
+      const skills = skillsText.split(',').map(s => s.trim()).filter(s => s);
+      document.getElementById('previewSkills').innerHTML = skills.map(skill => `<span class="preview-skill">${skill}</span>`).join('');
+    }
+
+    // Load portfolio if editing
+    async function loadPortfolio() {
+      if (action === 'edit' && portfolioId) {
+        try {
+          const result = await getPortfolio(portfolioId);
+          const portfolio = result.portfolio;
+
+          document.getElementById('title').value = portfolio.title || '';
+          document.getElementById('name').value = portfolio.bio ? portfolio.bio.split('\n')[0] : '';
+          document.getElementById('role').value = portfolio.role || '';
+          document.getElementById('bio').value = portfolio.bio || '';
+          document.getElementById('email').value = portfolio.email || '';
+          document.getElementById('phone').value = portfolio.phone || '';
+          document.getElementById('website').value = portfolio.website || '';
+          document.getElementById('template').value = portfolio.template || 'minimal';
+          document.getElementById('skillsInput').value = portfolio.skills ? portfolio.skills.join(', ') : '';
+
+          updatePreview();
+        } catch (error) {
+          showError(messageContainer, 'Failed to load portfolio');
+        }
+      }
+    }
+
+    // Save portfolio
+    saveBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      clearMessages(messageContainer);
+
+      const title = document.getElementById('title').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const role = document.getElementById('role').value.trim();
+      const bio = document.getElementById('bio').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const website = document.getElementById('website').value.trim();
+      const template = document.getElementById('template').value;
+      const skills = document.getElementById('skillsInput').value.split(',').map(s => s.trim()).filter(s => s);
+
+      if (!title || !name || !role) {
+        showError(messageContainer, 'Please fill in all required fields');
+        return;
+      }
+
+      try {
+        showLoading(saveBtn, 'Saving...');
+
+        const portfolioData = {
+          title,
+          bio: `${name}\n${bio}`,
+          role,
+          email,
+          phone,
+          website,
+          template,
+          skills
+        };
+
+        if (action === 'edit' && portfolioId) {
+          await updatePortfolio(portfolioId, portfolioData);
+          showSuccess(messageContainer, 'Portfolio updated successfully!');
+        } else {
+          const result = await createPortfolio(portfolioData);
+          showSuccess(messageContainer, 'Portfolio created successfully!');
+          setTimeout(() => {
+            redirect('/pages/dashboard.html');
+          }, 1500);
+        }
+
+        hideLoading(saveBtn);
+      } catch (error) {
+        showError(messageContainer, error.message);
+        hideLoading(saveBtn);
+      }
+    });
+
+    // Real-time preview update
+    form.querySelectorAll('input, textarea, select').forEach(field => {
+      field.addEventListener('change', updatePreview);
+      field.addEventListener('input', updatePreview);
+    });
+
+    // Back button
+    backBtn.addEventListener('click', () => {
+      redirect('/pages/dashboard.html');
+    });
+
+    // Preview button
+    previewBtn.addEventListener('click', () => {
+      alert('Portfolio preview will be available when you publish!');
+    });
+
+    // Load data
+    loadPortfolio();
+    updatePreview();
+  </script>
+</body>
+</html>

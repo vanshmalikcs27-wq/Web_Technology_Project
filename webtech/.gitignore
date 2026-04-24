@@ -1,0 +1,16 @@
+node_modules/
+*.db
+*.sqlite
+*.sqlite3
+.env
+.DS_Store
+dist/
+build/
+*.log
+npm-debug.log
+yarn-error.log
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
