@@ -1,33 +1,36 @@
-const { getRow, getAllRows, runQuery } = require('../db');
+const Portfolio = require('../models/Portfolio');
 
 // Create portfolio
-async function createPortfolio(req, res) {
+exports.createPortfolio = async (req, res) => {
   try {
     const { title, bio, role, email, phone, website, template } = req.body;
 
-    const result = await runQuery(
-      'INSERT INTO portfolios (userId, title, bio, role, email, phone, website, template) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [req.userId, title || 'My Portfolio', bio || '', role || '', email || '', phone || '', website || '', template || 'minimal']
-    );
+    const portfolio = await Portfolio.create({
+      userId: req.userId,
+      title: title || 'My Portfolio',
+      bio: bio || '',
+      role: role || '',
+      email: email || '',
+      phone: phone || '',
+      website: website || '',
+      template: template || 'minimal'
+    });
 
     res.status(201).json({
       success: true,
       message: 'Portfolio created',
-      portfolioId: result.id
+      portfolio
     });
   } catch (error) {
     console.error('Create portfolio error:', error);
     res.status(500).json({ error: 'Failed to create portfolio' });
   }
-}
+};
 
 // Get user portfolios
-async function getUserPortfolios(req, res) {
+exports.getUserPortfolios = async (req, res) => {
   try {
-    const portfolios = await getAllRows(
-      'SELECT * FROM portfolios WHERE userId = ? ORDER BY createdAt DESC',
-      [req.userId]
-    );
+    const portfolios = await Portfolio.find({ userId: req.userId }).sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -37,126 +40,75 @@ async function getUserPortfolios(req, res) {
     console.error('Get portfolios error:', error);
     res.status(500).json({ error: 'Failed to get portfolios' });
   }
-}
+};
 
 // Get portfolio by ID
-async function getPortfolioById(req, res) {
+exports.getPortfolioById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const portfolio = await getRow(
-      'SELECT * FROM portfolios WHERE id = ? AND userId = ?',
-      [id, req.userId]
-    );
+    const portfolio = await Portfolio.findOne({ _id: id, userId: req.userId });
 
     if (!portfolio) {
       return res.status(404).json({ error: 'Portfolio not found' });
     }
 
-    // Get related data
-    const skills = await getAllRows('SELECT skill FROM skills WHERE portfolioId = ?', [id]);
-    const experience = await getAllRows('SELECT * FROM experience WHERE portfolioId = ?', [id]);
-    const education = await getAllRows('SELECT * FROM education WHERE portfolioId = ?', [id]);
-    const projects = await getAllRows('SELECT * FROM projects WHERE portfolioId = ?', [id]);
-
     res.json({
       success: true,
-      portfolio: {
-        ...portfolio,
-        skills: skills.map(s => s.skill),
-        experience,
-        education,
-        projects
-      }
+      portfolio
     });
   } catch (error) {
     console.error('Get portfolio error:', error);
     res.status(500).json({ error: 'Failed to get portfolio' });
   }
-}
+};
 
 // Update portfolio
-async function updatePortfolio(req, res) {
+exports.updatePortfolio = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, bio, role, email, phone, website, template, skills, experience, education, projects } = req.body;
+    const { title, bio, role, email, phone, website, template } = req.body;
 
-    // Check ownership
-    const portfolio = await getRow('SELECT * FROM portfolios WHERE id = ? AND userId = ?', [id, req.userId]);
+    const portfolio = await Portfolio.findOneAndUpdate(
+      { _id: id, userId: req.userId },
+      {
+        title,
+        bio,
+        role,
+        email,
+        phone,
+        website,
+        template,
+        updatedAt: new Date()
+      },
+      { new: true }
+    );
+
     if (!portfolio) {
       return res.status(404).json({ error: 'Portfolio not found' });
     }
 
-    // Update portfolio
-    await runQuery(
-      'UPDATE portfolios SET title = ?, bio = ?, role = ?, email = ?, phone = ?, website = ?, template = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
-      [title, bio, role, email, phone, website, template, id]
-    );
-
-    // Update skills
-    await runQuery('DELETE FROM skills WHERE portfolioId = ?', [id]);
-    if (skills && skills.length > 0) {
-      for (const skill of skills) {
-        await runQuery('INSERT INTO skills (portfolioId, skill) VALUES (?, ?)', [id, skill]);
-      }
-    }
-
-    // Update experience
-    if (experience) {
-      await runQuery('DELETE FROM experience WHERE portfolioId = ?', [id]);
-      for (const exp of experience) {
-        await runQuery(
-          'INSERT INTO experience (portfolioId, title, company, startDate, endDate, description) VALUES (?, ?, ?, ?, ?, ?)',
-          [id, exp.title, exp.company, exp.startDate, exp.endDate, exp.description]
-        );
-      }
-    }
-
-    // Update education
-    if (education) {
-      await runQuery('DELETE FROM education WHERE portfolioId = ?', [id]);
-      for (const edu of education) {
-        await runQuery(
-          'INSERT INTO education (portfolioId, school, degree, field, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?)',
-          [id, edu.school, edu.degree, edu.field, edu.startDate, edu.endDate]
-        );
-      }
-    }
-
-    // Update projects
-    if (projects) {
-      await runQuery('DELETE FROM projects WHERE portfolioId = ?', [id]);
-      for (const proj of projects) {
-        await runQuery(
-          'INSERT INTO projects (portfolioId, title, description, link) VALUES (?, ?, ?, ?)',
-          [id, proj.title, proj.description, proj.link]
-        );
-      }
-    }
-
     res.json({
       success: true,
-      message: 'Portfolio updated'
+      message: 'Portfolio updated',
+      portfolio
     });
   } catch (error) {
     console.error('Update portfolio error:', error);
     res.status(500).json({ error: 'Failed to update portfolio' });
   }
-}
+};
 
 // Delete portfolio
-async function deletePortfolio(req, res) {
+exports.deletePortfolio = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Check ownership
-    const portfolio = await getRow('SELECT * FROM portfolios WHERE id = ? AND userId = ?', [id, req.userId]);
+    const portfolio = await Portfolio.findOneAndDelete({ _id: id, userId: req.userId });
+
     if (!portfolio) {
       return res.status(404).json({ error: 'Portfolio not found' });
     }
-
-    // Delete cascading data will be handled by foreign keys
-    await runQuery('DELETE FROM portfolios WHERE id = ?', [id]);
 
     res.json({
       success: true,
@@ -166,36 +118,31 @@ async function deletePortfolio(req, res) {
     console.error('Delete portfolio error:', error);
     res.status(500).json({ error: 'Failed to delete portfolio' });
   }
-}
+};
 
 // Publish portfolio
-async function publishPortfolio(req, res) {
+exports.publishPortfolio = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const portfolio = await getRow('SELECT * FROM portfolios WHERE id = ? AND userId = ?', [id, req.userId]);
+    const portfolio = await Portfolio.findOneAndUpdate(
+      { _id: id, userId: req.userId },
+      { published: true },
+      { new: true }
+    );
+
     if (!portfolio) {
       return res.status(404).json({ error: 'Portfolio not found' });
     }
 
-    await runQuery('UPDATE portfolios SET published = 1 WHERE id = ?', [id]);
-
     res.json({
       success: true,
       message: 'Portfolio published',
+      portfolio,
       publicUrl: `/portfolio/${id}`
     });
   } catch (error) {
     console.error('Publish portfolio error:', error);
     res.status(500).json({ error: 'Failed to publish portfolio' });
   }
-}
-
-module.exports = {
-  createPortfolio,
-  getUserPortfolios,
-  getPortfolioById,
-  updatePortfolio,
-  deletePortfolio,
-  publishPortfolio
 };

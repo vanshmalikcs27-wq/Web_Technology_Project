@@ -1,8 +1,5 @@
 const bcrypt = require('bcrypt');
-const { getRow, runQuery } = require('../db');
 const { generateToken } = require('../middleware/auth');
-
-// Sign up
 const User = require("../models/User");
 
 exports.signup = async (req, res) => {
@@ -57,9 +54,7 @@ exports.signup = async (req, res) => {
 
 
 // Login
-
-// Login
-async function login(req, res) {
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -68,8 +63,8 @@ async function login(req, res) {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
-    // Find user
-    const user = await getRow('SELECT * FROM users WHERE email = ?', [email]);
+    // Find user using MongoDB
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
@@ -81,14 +76,14 @@ async function login(req, res) {
     }
 
     // Generate token
-    const token = generateToken(user.id, user.email);
+    const token = generateToken(user._id, user.email);
 
     res.json({
       success: true,
       message: 'Logged in successfully',
       token,
       user: {
-        id: user.id,
+        id: user._id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName
@@ -98,12 +93,12 @@ async function login(req, res) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Login failed' });
   }
-}
+};
 
 // Get current user
-async function getCurrentUser(req, res) {
+exports.getCurrentUser = async (req, res) => {
   try {
-    const user = await getRow('SELECT id, email, firstName, lastName, createdAt FROM users WHERE id = ?', [req.userId]);
+    const user = await User.findById(req.userId).select('-password');
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -117,19 +112,18 @@ async function getCurrentUser(req, res) {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Failed to get user' });
   }
-}
+};
 
 // Update user profile
-async function updateProfile(req, res) {
+exports.updateProfile = async (req, res) => {
   try {
     const { firstName, lastName } = req.body;
 
-    await runQuery(
-      'UPDATE users SET firstName = ?, lastName = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
-      [firstName || '', lastName || '', req.userId]
-    );
-
-    const user = await getRow('SELECT id, email, firstName, lastName FROM users WHERE id = ?', [req.userId]);
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { firstName, lastName },
+      { new: true }
+    ).select('-password');
 
     res.json({
       success: true,
@@ -140,11 +134,4 @@ async function updateProfile(req, res) {
     console.error('Update profile error:', error);
     res.status(500).json({ error: 'Failed to update profile' });
   }
-}
-
-module.exports = {
-  signup,
-  login,
-  getCurrentUser,
-  updateProfile
 };
