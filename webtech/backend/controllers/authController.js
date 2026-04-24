@@ -3,33 +3,49 @@ const { getRow, runQuery } = require('../db');
 const { generateToken } = require('../middleware/auth');
 
 // Sign up
-async function signup(req, res) {
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
+
+exports.signup = async (req, res) => {
   try {
     const { email, password, firstName, lastName } = req.body;
 
-    // Validate input
+    // validation
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required' });
+      return res.status(400).json({ error: "Email and password required" });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+      return res.status(400).json({ error: "Password must be at least 6 characters" });
     }
 
-    // Check if user exists
-    const existingUser = await getRow('SELECT * FROM users WHERE email = ?', [email]);
+    // check existing user (MongoDB)
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ error: 'Email already registered' });
+      return res.status(409).json({ error: "Email already registered" });
     }
 
-    // Hash password
+    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const result = await runQuery(
-      'INSERT INTO users (email, password, firstName, lastName) VALUES (?, ?, ?, ?)',
-      [email, hashedPassword, firstName || '', lastName || '']
-    );
+    // create user (MongoDB)
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName
+    });
+
+    res.json({
+      message: "Signup successful ✅",
+      user
+    });
+
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
     // Generate token
     const token = generateToken(result.id, email);
